@@ -1,3 +1,14 @@
+showIntLst :: [Int] -> String
+showIntLst l = "[" ++ (tail' (foldl (\x -> \y -> x  ++ "," ++ (showInt y)) "" l)) ++ "]"
+
+showInt :: Int -> String
+showInt n 
+   | n < 0 = '-' : showInt (-n)
+   | n == 0 = ['0']
+   | n < 10 = [succ $ (showInt $ n-1) !! 0]
+   | otherwise = (showInt $ n `div` 10) ++ (showInt $ n `mod` 10)
+
+
 head' :: [t] -> t
 head' [] = error "Error! Empty list"
 head' (l:x)  = l
@@ -65,6 +76,3 @@ indexOfHelper a (b:c) n
 positions :: Char -> String -> [Int]
 positions a [] = []
 positions a b = (positions a (init b)) +-+ (if a == last' b then [length b] else [])
-
-
-
