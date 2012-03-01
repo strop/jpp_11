@@ -8,6 +8,42 @@ showInt n
    | n < 10 = [succ $ (showInt $ n-1) !! 0]
    | otherwise = (showInt $ n `div` 10) ++ (showInt $ n `mod` 10)
 
+split :: (a -> Bool) -> [a] -> [[a]]
+split f a = foldl (\acc -> \x -> if f x then ((init acc) ++ [(last acc) ++ [x]]) else (acc ++ [[]])) [[]] a 
+
+--instance Functor (Either e) where
+--  fmap f (Right (a:[])) = Right [a]
+--  fmap f (Right (a:b)) = fmap f (Right (b++[a]))
+--  fmap f (Left e) = Left e
+
+fromList :: [a] -> Tree a
+fromList [] = Empty
+
+
+toList :: Tree a -> [a]
+toList Empty = []
+toList (Node a l r) = (toList l) ++ [a] ++ (toList r) 
+
+instance Functor Tree where
+  fmap f Empty = Empty
+  fmap f (Node a b c) = Node (f a) (fmap f b) (fmap f b) 
+
+data Tree a = Empty | Node a (Tree a) (Tree a) deriving (Eq, Ord, Show)
+
+nub' [] = []
+nub' (a:b) = a:(filter (/= a) b)
+
+concat'' :: [[a]] -> [a]
+concat'' a = foldl (++) [] a
+
+facFoldl :: Int -> Int
+facFoldl n = foldl (*) 1 [1..n] 
+
+facFoldr :: Int -> Int
+facFoldr n = foldr (*) 1 [1..n] 
+
+incAll :: [[Int]] -> [[Int]]
+incAll a = map (map succ) a
 
 head' :: [t] -> t
 head' [] = error "Error! Empty list"
