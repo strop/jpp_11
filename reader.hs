@@ -30,3 +30,12 @@ sampleBindings = Map.fromList [("count",3), ("1",1), ("b",2)]
 main = do
   putStr $ "Count is correct for bindings " ++ (show sampleBindings) ++ ": ";
   putStrLn $ show (isCountCorrect' sampleBindings);
+
+
+-- Zad 1
+allPairs :: [a] -> [a] -> [[a]]
+allPairs xs ys = [[x,y] | x <- xs, y <- ys]
+
+allPairs' xs ys = do { x <- xs; y <- ys; return [x,y] }
+
+renumberR :: Reader 
