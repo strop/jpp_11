@@ -1,38 +1,67 @@
-showIntLst :: [Int] -> String
-showIntLst l = "[" ++ (tail' (foldl (\x -> \y -> x  ++ "," ++ (showInt y)) "" l)) ++ "]"
+----------
+-- LAB 2
+----------
 
-showInt :: Int -> String
-showInt n 
-   | n < 0 = '-' : showInt (-n)
-   | n == 0 = ['0']
-   | n < 10 = [succ $ (showInt $ n-1) !! 0]
-   | otherwise = (showInt $ n `div` 10) ++ (showInt $ n `mod` 10)
+
+isDigit :: Char -> Bool
+isDigit a = a `elem` ['0'..'9']
 
 split :: (a -> Bool) -> [a] -> [[a]]
 split f a = foldl (\acc -> \x -> if f x then ((init acc) ++ [(last acc) ++ [x]]) else (acc ++ [[]])) [[]] a 
+--Zad 3
 
---instance Functor (Either e) where
---  fmap f (Right (a:[])) = Right [a]
---  fmap f (Right (a:b)) = fmap f (Right (b++[a]))
---  fmap f (Left e) = Left e
+--c)
+class Functor f => Pointed f where
+  pure :: a -> f a
 
-fromList :: [a] -> Tree a
-fromList [] = Empty
+--b)
+reverseRight [] = []
+reverseRight (a:b) = (reverseRight b) +-+ [a]
 
+reverseRight' (Right []) = Right []
+reverseRight' (Right (a:b)) = Right ((reverse b) +-+ [a]) 
 
+--a)
+instance Functor (Either e) where
+  fmap f (Right a) = Right (f a)
+  fmap f (Left e) = Left e
+
+--Zad 2
+--c) Drzewa BST
+insert :: (Ord a) => a -> Tree a -> Tree a
+contains :: (Ord a) => a -> Tree a -> Bool
+fromList :: (Ord a) => [a] -> Tree a
+
+insert a Empty = Node a Empty Empty
+insert a (Node b l r)
+  | a < b = Node b (insert a l) r
+  | otherwise = Node b l (insert a r)
+
+contains _ Empty = False
+contains a (Node b l r)
+  | a == b = True
+  | otherwise = (contains a l) || (contains a r)
+
+fromList a = foldl (flip insert) Empty a
+
+--b)
 toList :: Tree a -> [a]
 toList Empty = []
 toList (Node a l r) = (toList l) ++ [a] ++ (toList r) 
 
+--a)
 instance Functor Tree where
   fmap f Empty = Empty
   fmap f (Node a b c) = Node (f a) (fmap f b) (fmap f b) 
 
 data Tree a = Empty | Node a (Tree a) (Tree a) deriving (Eq, Ord, Show)
 
+--Zad 1
+--c)
 nub' [] = []
 nub' (a:b) = a:(filter (/= a) b)
 
+--b)
 concat'' :: [[a]] -> [a]
 concat'' a = foldl (++) [] a
 
@@ -42,8 +71,13 @@ facFoldl n = foldl (*) 1 [1..n]
 facFoldr :: Int -> Int
 facFoldr n = foldr (*) 1 [1..n] 
 
+--a)
 incAll :: [[Int]] -> [[Int]]
 incAll a = map (map succ) a
+
+----------
+-- LAB 1
+----------
 
 head' :: [t] -> t
 head' [] = error "Error! Empty list"
@@ -112,3 +146,13 @@ indexOfHelper a (b:c) n
 positions :: Char -> String -> [Int]
 positions a [] = []
 positions a b = (positions a (init b)) +-+ (if a == last' b then [length b] else [])
+
+showIntLst :: [Int] -> String
+showIntLst l = "[" ++ (tail' (foldl (\x -> \y -> x  ++ "," ++ (showInt y)) "" l)) ++ "]"
+
+showInt :: Int -> String
+showInt n 
+   | n < 0 = '-' : showInt (-n)
+   | n == 0 = ['0']
+   | n < 10 = [succ $ (showInt $ n-1) !! 0]
+   | otherwise = (showInt $ n `div` 10) ++ (showInt $ n `mod` 10)

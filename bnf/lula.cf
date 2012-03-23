@@ -1,0 +1,12 @@
+Prog . Program ::= [Stmt];
+
+(:[]).    [Stmt] ::= Stmt ";";
+(:).      [Stmt] ::= Stmt ";" [Stmt];
+
+ENum . Expr ::= Numb;
+EPlus . Expr ::= Expr "+" Expr;
+
+NumI . Numb ::= Integer;
+
+SAssign . Stmt ::= Ident "=" Expr;
+SWhile . Stmt ::= "while" "(" Expr ")" Stmt;
