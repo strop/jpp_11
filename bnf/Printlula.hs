@@ -86,24 +86,64 @@ instance Print Program where
    Prog stmts -> prPrec i 0 (concatD [prt 0 stmts])
 
 
-instance Print Expr where
-  prt i e = case e of
-   ENum numb -> prPrec i 0 (concatD [prt 0 numb])
-   EPlus expr0 expr -> prPrec i 0 (concatD [prt 0 expr0 , doc (showString "+") , prt 0 expr])
-
-
-instance Print Numb where
-  prt i e = case e of
-   NumI n -> prPrec i 0 (concatD [prt 0 n])
-
-
 instance Print Stmt where
   prt i e = case e of
    SAssign id expr -> prPrec i 0 (concatD [prt 0 id , doc (showString "=") , prt 0 expr])
    SWhile expr stmt -> prPrec i 0 (concatD [doc (showString "while") , doc (showString "(") , prt 0 expr , doc (showString ")") , prt 0 stmt])
+   SIf expr stmt -> prPrec i 0 (concatD [doc (showString "if") , doc (showString "(") , prt 0 expr , doc (showString ")") , prt 0 stmt])
+   SIfElse expr stmt0 stmt -> prPrec i 0 (concatD [doc (showString "if") , doc (showString "(") , prt 0 expr , doc (showString ")") , prt 0 stmt0 , doc (showString "else") , prt 0 stmt])
 
   prtList es = case es of
    [x] -> (concatD [prt 0 x , doc (showString ";")])
    x:xs -> (concatD [prt 0 x , doc (showString ";") , prt 0 xs])
+
+instance Print Decl where
+  prt i e = case e of
+   DFun id -> prPrec i 0 (concatD [doc (showString "fun") , prt 0 id , doc (showString "(") , doc (showString ")")])
+   DFunP id0 id -> prPrec i 0 (concatD [doc (showString "fun") , prt 0 id0 , doc (showString "(") , prt 0 id , doc (showString ")")])
+   DProc id -> prPrec i 0 (concatD [doc (showString "proc") , prt 0 id , doc (showString "(") , doc (showString ")")])
+   DProcP id0 id -> prPrec i 0 (concatD [doc (showString "proc") , prt 0 id0 , doc (showString "(") , prt 0 id , doc (showString ")")])
+
+
+instance Print Expr where
+  prt i e = case e of
+   EBool boo -> prPrec i 9 (concatD [prt 0 boo])
+   ENum numbi -> prPrec i 9 (concatD [prt 0 numbi])
+   EReal numbr -> prPrec i 9 (concatD [prt 0 numbr])
+   EVar id -> prPrec i 8 (concatD [prt 0 id])
+   EArr id -> prPrec i 8 (concatD [prt 0 id , doc (showString "[") , doc (showString "]")])
+   EFunc id -> prPrec i 8 (concatD [prt 0 id , doc (showString "(") , doc (showString ")")])
+   EFuncP id expr -> prPrec i 8 (concatD [prt 0 id , doc (showString "(") , prt 0 expr , doc (showString ")")])
+   ENeg expr -> prPrec i 7 (concatD [doc (showString "!") , prt 6 expr])
+   EMod expr0 expr -> prPrec i 6 (concatD [prt 6 expr0 , doc (showString "%") , prt 7 expr])
+   EDiv expr0 expr -> prPrec i 6 (concatD [prt 6 expr0 , doc (showString "/") , prt 7 expr])
+   ETimes expr0 expr -> prPrec i 6 (concatD [prt 6 expr0 , doc (showString "*") , prt 7 expr])
+   EMinus expr0 expr -> prPrec i 5 (concatD [prt 5 expr0 , doc (showString "-") , prt 6 expr])
+   EPlus expr0 expr -> prPrec i 5 (concatD [prt 5 expr0 , doc (showString "+") , prt 6 expr])
+   EGeq expr0 expr -> prPrec i 4 (concatD [prt 4 expr0 , doc (showString ">=") , prt 5 expr])
+   ELeq expr0 expr -> prPrec i 4 (concatD [prt 4 expr0 , doc (showString "<=") , prt 5 expr])
+   ELess expr0 expr -> prPrec i 4 (concatD [prt 4 expr0 , doc (showString "<") , prt 5 expr])
+   EGrea expr0 expr -> prPrec i 4 (concatD [prt 4 expr0 , doc (showString ">") , prt 5 expr])
+   ENeq expr0 expr -> prPrec i 3 (concatD [prt 3 expr0 , doc (showString "!=") , prt 4 expr])
+   EEq expr0 expr -> prPrec i 3 (concatD [prt 3 expr0 , doc (showString "==") , prt 4 expr])
+   EAnd expr0 expr -> prPrec i 2 (concatD [prt 2 expr0 , doc (showString "&&") , prt 3 expr])
+   EOr expr0 expr -> prPrec i 0 (concatD [prt 0 expr0 , doc (showString "||") , prt 2 expr])
+
+
+instance Print Boo where
+  prt i e = case e of
+   BTrue  -> prPrec i 0 (concatD [doc (showString "true")])
+   BFalse  -> prPrec i 0 (concatD [doc (showString "false")])
+
+
+instance Print NumbI where
+  prt i e = case e of
+   NumI n -> prPrec i 0 (concatD [prt 0 n])
+
+
+instance Print NumbR where
+  prt i e = case e of
+   NumR d -> prPrec i 0 (concatD [prt 0 d])
+
 
 

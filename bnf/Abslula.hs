@@ -7,17 +7,54 @@ data Program =
    Prog [Stmt]
   deriving (Eq,Ord,Show)
 
-data Expr =
-   ENum Numb
- | EPlus Expr Expr
-  deriving (Eq,Ord,Show)
-
-data Numb =
-   NumI Integer
-  deriving (Eq,Ord,Show)
-
 data Stmt =
    SAssign Ident Expr
  | SWhile Expr Stmt
+ | SIf Expr Stmt
+ | SIfElse Expr Stmt Stmt
+  deriving (Eq,Ord,Show)
+
+data Decl =
+   DFun Ident
+ | DFunP Ident Ident
+ | DProc Ident
+ | DProcP Ident Ident
+  deriving (Eq,Ord,Show)
+
+data Expr =
+   EBool Boo
+ | ENum NumbI
+ | EReal NumbR
+ | EVar Ident
+ | EArr Ident
+ | EFunc Ident
+ | EFuncP Ident Expr
+ | ENeg Expr
+ | EMod Expr Expr
+ | EDiv Expr Expr
+ | ETimes Expr Expr
+ | EMinus Expr Expr
+ | EPlus Expr Expr
+ | EGeq Expr Expr
+ | ELeq Expr Expr
+ | ELess Expr Expr
+ | EGrea Expr Expr
+ | ENeq Expr Expr
+ | EEq Expr Expr
+ | EAnd Expr Expr
+ | EOr Expr Expr
+  deriving (Eq,Ord,Show)
+
+data Boo =
+   BTrue
+ | BFalse
+  deriving (Eq,Ord,Show)
+
+data NumbI =
+   NumI Integer
+  deriving (Eq,Ord,Show)
+
+data NumbR =
+   NumR Double
   deriving (Eq,Ord,Show)
 

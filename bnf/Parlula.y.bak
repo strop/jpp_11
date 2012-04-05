@@ -8,9 +8,32 @@ import ErrM
 
 %name pProgram Program
 %name pListStmt ListStmt
-%name pExpr Expr
-%name pNumb Numb
 %name pStmt Stmt
+%name pDecl Decl
+%name pExpr9 Expr9
+%name pExpr8 Expr8
+%name pExpr7 Expr7
+%name pExpr6 Expr6
+%name pExpr5 Expr5
+%name pExpr4 Expr4
+%name pExpr3 Expr3
+%name pExpr2 Expr2
+%name pExpr Expr
+%name pExpr1 Expr1
+%name pExpr10 Expr10
+%name pExpr11 Expr11
+%name pExpr12 Expr12
+%name pExpr13 Expr13
+%name pExpr14 Expr14
+%name pExpr15 Expr15
+%name pExpr16 Expr16
+%name pExpr17 Expr17
+%name pExpr18 Expr18
+%name pExpr19 Expr19
+%name pExpr20 Expr20
+%name pBoo Boo
+%name pNumbI NumbI
+%name pNumbR NumbR
 
 -- no lexer declaration
 %monad { Err } { thenM } { returnM }
@@ -18,18 +41,44 @@ import ErrM
 
 %token 
  ';' { PT _ (TS ";") }
- '+' { PT _ (TS "+") }
  '=' { PT _ (TS "=") }
+ '(' { PT _ (TS "(") }
+ ')' { PT _ (TS ")") }
+ '[' { PT _ (TS "[") }
+ ']' { PT _ (TS "]") }
+ '!' { PT _ (TS "!") }
+ '%' { PT _ (TS "%") }
+ '/' { PT _ (TS "/") }
+ '*' { PT _ (TS "*") }
+ '-' { PT _ (TS "-") }
+ '+' { PT _ (TS "+") }
+ '>=' { PT _ (TS ">=") }
+ '<=' { PT _ (TS "<=") }
+ '<' { PT _ (TS "<") }
+ '>' { PT _ (TS ">") }
+ '!=' { PT _ (TS "!=") }
+ '==' { PT _ (TS "==") }
+ '&&' { PT _ (TS "&&") }
+ '||' { PT _ (TS "||") }
+ 'else' { PT _ (TS "else") }
+ 'false' { PT _ (TS "false") }
+ 'fun' { PT _ (TS "fun") }
+ 'if' { PT _ (TS "if") }
+ 'proc' { PT _ (TS "proc") }
+ 'true' { PT _ (TS "true") }
+ 'while' { PT _ (TS "while") }
 
-L_integ  { PT _ (TI $$) }
 L_ident  { PT _ (TV $$) }
+L_integ  { PT _ (TI $$) }
+L_doubl  { PT _ (TD $$) }
 L_err    { _ }
 
 
 %%
 
-Integer :: { Integer } : L_integ  { (read $1) :: Integer }
 Ident   :: { Ident }   : L_ident  { Ident $1 }
+Integer :: { Integer } : L_integ  { (read $1) :: Integer }
+Double  :: { Double }  : L_doubl  { (read $1) :: Double }
 
 Program :: { Program }
 Program : ListStmt { Prog $1 } 
@@ -40,17 +89,136 @@ ListStmt : Stmt ';' { (:[]) $1 }
   | Stmt ';' ListStmt { (:) $1 $3 }
 
 
-Expr :: { Expr }
-Expr : Numb { ENum $1 } 
-  | Expr '+' Expr { EPlus $1 $3 }
-
-
-Numb :: { Numb }
-Numb : Integer { NumI $1 } 
-
-
 Stmt :: { Stmt }
 Stmt : Ident '=' Expr { SAssign $1 $3 } 
+  | 'while' '(' Expr ')' Stmt { SWhile $3 $5 }
+  | 'if' '(' Expr ')' Stmt { SIf $3 $5 }
+  | 'if' '(' Expr ')' Stmt 'else' Stmt { SIfElse $3 $5 $7 }
+
+
+Decl :: { Decl }
+Decl : 'fun' Ident '(' ')' { DFun $2 } 
+  | 'fun' Ident '(' Ident ')' { DFunP $2 $4 }
+  | 'proc' Ident '(' ')' { DProc $2 }
+  | 'proc' Ident '(' Ident ')' { DProcP $2 $4 }
+
+
+Expr9 :: { Expr }
+Expr9 : Boo { EBool $1 } 
+  | NumbI { ENum $1 }
+  | NumbR { EReal $1 }
+  | Expr10 { $1 }
+
+
+Expr8 :: { Expr }
+Expr8 : Ident { EVar $1 } 
+  | Ident '[' ']' { EArr $1 }
+  | Ident '(' ')' { EFunc $1 }
+  | Ident '(' Expr ')' { EFuncP $1 $3 }
+  | Expr9 { $1 }
+
+
+Expr7 :: { Expr }
+Expr7 : '!' Expr6 { ENeg $2 } 
+  | Expr8 { $1 }
+
+
+Expr6 :: { Expr }
+Expr6 : Expr6 '%' Expr7 { EMod $1 $3 } 
+  | Expr6 '/' Expr7 { EDiv $1 $3 }
+  | Expr6 '*' Expr7 { ETimes $1 $3 }
+  | Expr7 { $1 }
+
+
+Expr5 :: { Expr }
+Expr5 : Expr5 '-' Expr6 { EMinus $1 $3 } 
+  | Expr5 '+' Expr6 { EPlus $1 $3 }
+  | Expr6 { $1 }
+
+
+Expr4 :: { Expr }
+Expr4 : Expr4 '>=' Expr5 { EGeq $1 $3 } 
+  | Expr4 '<=' Expr5 { ELeq $1 $3 }
+  | Expr4 '<' Expr5 { ELess $1 $3 }
+  | Expr4 '>' Expr5 { EGrea $1 $3 }
+  | Expr5 { $1 }
+
+
+Expr3 :: { Expr }
+Expr3 : Expr3 '!=' Expr5 { ENeq $1 $3 } 
+  | Expr3 '==' Expr5 { EEq $1 $3 }
+  | Expr4 { $1 }
+
+
+Expr2 :: { Expr }
+Expr2 : Expr2 '&&' Expr3 { EOr $1 $3 } 
+  | Expr3 { $1 }
+
+
+Expr :: { Expr }
+Expr : Expr '||' Expr2 { EAnd $1 $3 } 
+  | Expr1 { $1 }
+
+
+Expr1 :: { Expr }
+Expr1 : Expr2 { $1 } 
+
+
+Expr10 :: { Expr }
+Expr10 : Expr11 { $1 } 
+
+
+Expr11 :: { Expr }
+Expr11 : Expr12 { $1 } 
+
+
+Expr12 :: { Expr }
+Expr12 : Expr13 { $1 } 
+
+
+Expr13 :: { Expr }
+Expr13 : Expr14 { $1 } 
+
+
+Expr14 :: { Expr }
+Expr14 : Expr15 { $1 } 
+
+
+Expr15 :: { Expr }
+Expr15 : Expr16 { $1 } 
+
+
+Expr16 :: { Expr }
+Expr16 : Expr17 { $1 } 
+
+
+Expr17 :: { Expr }
+Expr17 : Expr18 { $1 } 
+
+
+Expr18 :: { Expr }
+Expr18 : Expr19 { $1 } 
+
+
+Expr19 :: { Expr }
+Expr19 : Expr20 { $1 } 
+
+
+Expr20 :: { Expr }
+Expr20 : '(' Expr ')' { $2 } 
+
+
+Boo :: { Boo }
+Boo : 'true' { BTrue } 
+  | 'false' { BFalse }
+
+
+NumbI :: { NumbI }
+NumbI : Integer { NumI $1 } 
+
+
+NumbR :: { NumbR }
+NumbR : Double { NumR $1 } 
 
 
 

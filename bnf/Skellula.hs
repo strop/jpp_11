@@ -19,21 +19,61 @@ transProgram x = case x of
   Prog stmts  -> failure x
 
 
-transExpr :: Expr -> Result
-transExpr x = case x of
-  ENum numb  -> failure x
-  EPlus expr0 expr  -> failure x
-
-
-transNumb :: Numb -> Result
-transNumb x = case x of
-  NumI n  -> failure x
-
-
 transStmt :: Stmt -> Result
 transStmt x = case x of
   SAssign id expr  -> failure x
   SWhile expr stmt  -> failure x
+  SIf expr stmt  -> failure x
+  SIfElse expr stmt0 stmt  -> failure x
+
+
+transDecl :: Decl -> Result
+transDecl x = case x of
+  DFun id  -> failure x
+  DFunP id0 id  -> failure x
+  DProc id  -> failure x
+  DProcP id0 id  -> failure x
+
+
+transExpr :: Expr -> Result
+transExpr x = case x of
+  EBool boo  -> failure x
+  ENum numbi  -> failure x
+  EReal numbr  -> failure x
+  EVar id  -> failure x
+  EArr id  -> failure x
+  EFunc id  -> failure x
+  EFuncP id expr  -> failure x
+  ENeg expr  -> failure x
+  EMod expr0 expr  -> failure x
+  EDiv expr0 expr  -> failure x
+  ETimes expr0 expr  -> failure x
+  EMinus expr0 expr  -> failure x
+  EPlus expr0 expr  -> failure x
+  EGeq expr0 expr  -> failure x
+  ELeq expr0 expr  -> failure x
+  ELess expr0 expr  -> failure x
+  EGrea expr0 expr  -> failure x
+  ENeq expr0 expr  -> failure x
+  EEq expr0 expr  -> failure x
+  EAnd expr0 expr  -> failure x
+  EOr expr0 expr  -> failure x
+
+
+transBoo :: Boo -> Result
+transBoo x = case x of
+  BTrue  -> failure x
+  BFalse  -> failure x
+
+
+transNumbI :: NumbI -> Result
+transNumbI x = case x of
+  NumI n  -> failure x
+
+
+transNumbR :: NumbR -> Result
+transNumbR x = case x of
+  NumR d  -> failure x
 
 
 

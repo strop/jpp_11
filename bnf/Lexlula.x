@@ -16,7 +16,7 @@ $i = [$l $d _ ']          -- identifier character
 $u = [\0-\255]          -- universal: any character
 
 @rsyms =    -- reserved words consisting of special symbols
-   \; | \+ | \= | \( | \)
+   \; | \= | \( | \) | \[ | \] | \! | \% | \/ | \* | \- | \+ | \> \= | \< \= | \< | \> | \! \= | \= \= | \& \& | \| \|
 
 :-
 
@@ -27,7 +27,7 @@ $l $i*   { tok (\p s -> PT p (eitherResIdent (TV . share) s)) }
 
 
 $d+      { tok (\p s -> PT p (TI $ share s))    }
-
+$d+ \. $d+ (e (\-)? $d+)? { tok (\p s -> PT p (TD $ share s)) }
 
 {
 
@@ -77,7 +77,7 @@ eitherResIdent tv s = treeFind resWords
                               | s > a  = treeFind right
                               | s == a = t
 
-resWords = b "while" N N
+resWords = b "if" (b "false" (b "else" N N) (b "fun" N N)) (b "true" (b "proc" N N) (b "while" N N))
    where b s = B s (TS s)
 
 unescapeInitTail :: String -> String
